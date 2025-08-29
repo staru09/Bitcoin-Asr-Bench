@@ -1,0 +1,58 @@
+{
+  "Canary": {
+    "WER": 16.6,
+    "Accuracy": 97.94,
+    "Precision": 85.8,
+    "Recall": 97.94,
+    "F1-Score": 91.47,
+    "Substitution Rate": 1.6680567139282736,
+    "Deletion Rate": 0.3892132332499305,
+    "Insertion Rate": 14.539894356408118,
+    "Total Errors": 597,
+    "Substitutions": 60,
+    "Deletions": 14,
+    "Insertions": 523
+  },
+  "Granite": {
+    "WER": 97.8,
+    "Accuracy": 77.93,
+    "Precision": 45.93,
+    "Recall": 77.93,
+    "F1-Score": 57.79,
+    "Substitution Rate": 16.013344453711426,
+    "Deletion Rate": 6.0606060606060606,
+    "Insertion Rate": 75.72977481234362,
+    "Total Errors": 3518,
+    "Substitutions": 576,
+    "Deletions": 218,
+    "Insertions": 2724
+  },
+  "Moshi": {
+    "WER": 4.31,
+    "Accuracy": 97.94,
+    "Precision": 96.65,
+    "Recall": 97.94,
+    "F1-Score": 97.29,
+    "Substitution Rate": 1.1398387545176536,
+    "Deletion Rate": 0.9174311926605505,
+    "Insertion Rate": 2.2518765638031693,
+    "Total Errors": 155,
+    "Substitutions": 41,
+    "Deletions": 33,
+    "Insertions": 81
+  },
+  "Parakeet": {
+    "WER": 9.06,
+    "Accuracy": 98.86,
+    "Precision": 92.1,
+    "Recall": 98.86,
+    "F1-Score": 95.36,
+    "Substitution Rate": 0.5560189046427579,
+    "Deletion Rate": 0.5838198498748958,
+    "Insertion Rate": 7.923269391159299,
+    "Total Errors": 326,
+    "Substitutions": 20,
+    "Deletions": 21,
+    "Insertions": 285
+  }
+}
