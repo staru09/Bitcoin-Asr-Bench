@@ -5,6 +5,7 @@ import sys
 from typing import List, Tuple
 import difflib
 from collections import Counter
+import chardet
 
 class WERCalculator:
     def __init__(self, ignore_case=True, ignore_punctuation=True, 
@@ -21,20 +22,61 @@ class WERCalculator:
             'right', 'okay', 'ok', 'yeah', 'yes', 'yep', 'mhm'
         }
     
-    def load_text_file(self, filepath: str) -> str:
+    def detect_encoding(self, filepath: str) -> str:
+        """Detect the encoding of a text file."""
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return f.read().strip()
-        except FileNotFoundError:
-            raise FileNotFoundError(f"File not found: {filepath}")
+            with open(filepath, 'rb') as f:
+                raw_data = f.read()
+                result = chardet.detect(raw_data)
+                return result['encoding'] or 'utf-8'
+        except Exception:
+            return 'utf-8'
+    
+    def load_text_file(self, filepath: str) -> str:
+        """Load text file with automatic encoding detection and fallback options."""
+        encodings_to_try = ['utf-8', 'windows-1252', 'iso-8859-1', 'cp1252', 'latin1']
+        
+        # First, try to detect encoding
+        detected_encoding = self.detect_encoding(filepath)
+        if detected_encoding and detected_encoding not in encodings_to_try:
+            encodings_to_try.insert(0, detected_encoding)
+        
+        last_error = None
+        
+        for encoding in encodings_to_try:
+            try:
+                with open(filepath, 'r', encoding=encoding) as f:
+                    content = f.read().strip()
+                    print(f"Successfully loaded {filepath} using {encoding} encoding")
+                    return content
+            except UnicodeDecodeError as e:
+                last_error = e
+                print(f"Failed to load {filepath} with {encoding} encoding: {e}")
+                continue
+            except FileNotFoundError:
+                raise FileNotFoundError(f"File not found: {filepath}")
+            except Exception as e:
+                raise Exception(f"Error reading {filepath}: {e}")
+        
+        # If all encodings fail, try with error handling
+        try:
+            with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+                content = f.read().strip()
+                print(f"Loaded {filepath} with UTF-8 encoding (replaced invalid characters)")
+                return content
         except Exception as e:
-            raise Exception(f"Error reading {filepath}: {e}")
+            raise Exception(f"Could not read {filepath} with any encoding. Last error: {last_error}")
     
     def normalize_text(self, text: str) -> List[str]:
         if self.ignore_case:
             text = text.lower()
         
         if self.ignore_punctuation:
+            # Replace smart quotes and other special characters
+            text = text.replace(''', "'").replace(''', "'")
+            text = text.replace('"', '"').replace('"', '"')
+            text = text.replace('–', '-').replace('—', '-')
+            
             text = re.sub(r"[^\w\s']", ' ', text)
             text = re.sub(r"'ll", " will", text)
             text = re.sub(r"'re", " are", text)
@@ -282,7 +324,6 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
 
-# Simple function for direct use
 def calculate_wer(reference_file: str, hypothesis_file: str, 
                  ignore_case: bool = True, ignore_punctuation: bool = True,
                  remove_fillers: bool = True) -> float:
